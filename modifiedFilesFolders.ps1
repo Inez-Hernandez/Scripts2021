@@ -14,7 +14,7 @@
 #   'STORE lll HAS NOT RECEIVED ANY ORDERS IN THE PAST 7 DAYS'
 # }
 
-# using -as flag to check valid user input and then conver to DateTime
+# User Input: using -as flag to check valid user input and then conver to DateTime
 $date = Read-Host 'Enter modified since date:'
 if (($date -as [DateTime]) -ne $null) {
   $date = [DateTime]::Parse($date)
@@ -22,7 +22,12 @@ if (($date -as [DateTime]) -ne $null) {
   'Error in date, format as: MM/DD/YYYY'
 }
 
-# now that we have the user inputs, return the file(s)
-Get-ChildItem C:\Users\ihernandez\Desktop -File -Recurse |
+# User Input: get the folder path
+# get the file path from the user and store in $location variable
+$location = Read-Host "Enter path as: Drive:\somefolder\somefolder\ <-backslash at the end"
+
+
+# Return: now that we have the user inputs, return the file(s)
+Get-ChildItem $location -File -Recurse |
     Where-Object { $_.LastWriteTime -gt $date } |
     select-Object FullName, LastWriteTime
