@@ -4,16 +4,6 @@
 # Source: Conver user input to date: https://community.idera.com/database-tools/powershell/powertips/b/tips/posts/converting-user-input-to-date
 # Itterate through folder: https://community.spiceworks.com/topic/2143488-powershell-script-to-list-folders-that-have-files-with-date-modified-in-a-range
 
-# $a = NULL
-# $a = Get-ChildItem \\server\lll\Received_Orders\*.* | Where{$_.LastWriteTime -ge (Get-Date).AddDays(-7)}
-# if ($a = (Get-ChildItem \\server\llll\Received_Orders\*.* | Where{$_.LastWriteTime -ge (Get-Date).AddDays(-7)}))
-# {
-# }
-# Else
-# {
-#   'STORE lll HAS NOT RECEIVED ANY ORDERS IN THE PAST 7 DAYS'
-# }
-
 # User Input: using -as flag to check valid user input and then conver to DateTime
 $date = Read-Host 'Enter modified since date:'
 if (($date -as [DateTime]) -ne $null) {
@@ -22,12 +12,25 @@ if (($date -as [DateTime]) -ne $null) {
   'Error in date, format as: MM/DD/YYYY'
 }
 
+# $edate = Read-Host 'Enter the last date to check for files:'
+# if (($edate -as [DateTime]) -ne $null) {
+#   $edate = [DateTime]::Parse($edate)
+# } else {
+#   'Error in date, format as: MM/DD/YYYY'
+# }
+
 # User Input: get the folder path
 # get the file path from the user and store in $location variable
 $location = Read-Host "Enter path as: Drive:\somefolder\somefolder\ <-backslash at the end"
+$folders = Get-ChildItem -LiteralPath $location -Directory
 
+# Let the user know the process is starting
+Write-Host "Starting process, a message will appear once finished"
 
 # Return: now that we have the user inputs, return the file(s)
-Get-ChildItem $location -File -Recurse |
-    Where-Object { $_.LastWriteTime -gt $date } |
-    select-Object FullName, LastWriteTime
+# can do an -and $_.LastWriteTime -le to a specified date
+Get-ChildItem $location -Recurse -File |
+    Where-Object { $_.LastWriteTime -ge $date } | Select-Object Directory, LastWriteTime, Name | Export-Csv -Path $env:USERPROFILE\Desktop\results1.csv -NoTypeInformation
+
+# let user know we are done.
+Write-Host "Process completed"
